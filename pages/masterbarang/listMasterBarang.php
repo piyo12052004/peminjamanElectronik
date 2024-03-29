@@ -266,6 +266,9 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
                                             <th
                                                 class="text-center text-uppercase text-primary text-xxs font-weight-bolder">
                                                 Status</th>
+                                            <th
+                                                class="text-center text-uppercase text-primary text-xxs font-weight-bolder">
+                                                Aksi</th>
                                             <!-- <th class="text-primary opacity-7"></th> -->
                                         </tr>
                                     </thead>
@@ -348,6 +351,32 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
                     </div>
                 </div>
             </div>
+
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalEdit" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalEditLabel">Edit Barang</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="#" id="updateForm" method="post" autocomplete="off">
+                            <div class="modal-body" id="info_update">
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" name="edit" id="editBarang">Save
+                                    changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </main>
 
 
@@ -376,9 +405,9 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
 
 <script>
 $(document).ready(function() {
-    setInterval(function() {
-        getDataBarang();
-    }, 100);
+    // setInterval(function() {
+    getDataBarang();
+    // }, 100);
     $('#formSimpan').submit(function(event) {
         // Menghentikan aksi bawaan formulir
         event.preventDefault();
@@ -409,6 +438,8 @@ $(document).ready(function() {
                 });
                 // Tutup modal jika diperlukan
                 $('#exampleModal').modal('hide');
+                getDataBarang();
+                // event.preventDefault();
             }
         });
     });
@@ -424,4 +455,42 @@ function getDataBarang() {
         }
     })
 }
+
+$(document).on('click', '.edit_data', function() {
+    var edit_id = $(this).attr('id');
+
+    $.ajax({
+        url: "editBarang.php",
+        type: 'post',
+        data: {
+            edit_id: edit_id
+        },
+        success: function(data) {
+            $('#info_update').html(data);
+            $('#modalEdit').modal('show');
+        }
+    })
+});
+
+$(document).on('click', '#editBarang', function(event) {
+    event.preventDefault();
+    $.ajax({
+        url: 'update.php',
+        type: 'post',
+        data: $('#updateForm').serialize(),
+        success: function(data) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses!',
+                text: 'Data berhasil diupdate.',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            $('#modalEdit').modal('hide');
+            getDataBarang();
+            // event.preventDefault();
+        }
+
+    })
+})
 </script>

@@ -30,5 +30,11 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
         <span class="badge badge-sm bg-gradient-danger">Non Aktif</span>
         <?php endif; ?>
     </td>
+    <td class="align-middle text-center">
+        <a href="" class="text-secondary font-weight-bold text-xs edit_data" data-bs-toggle="modal"
+            data-bs-target="#modalEdit" id="<?= $result['id_barang'] ?>">
+            Edit
+        </a>
+    </td>
 </tr>
 <?php endforeach ?>
