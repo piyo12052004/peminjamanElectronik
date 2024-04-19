@@ -1,3 +1,8 @@
+<?php 
+
+include '../../config/koneksi.php';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,6 +61,16 @@
                         <span class="nav-link-text ms-1">Master Barang</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="../transaksi/listTransaksi.php">
+                        <div
+                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
+                        </div>
+                        <span class="nav-link-text ms-1">Transaksi Barang</span>
+                    </a>
+                </li>
+                
                 <!-- <li class="nav-item">
                     <a class="nav-link " href="../../pages/billing.html">
                         <div
@@ -439,17 +454,74 @@
                     </div>
                 </div>
             </div>
+
+
             <div class="row mt-4">
                 <div class="col-lg-7 mb-lg-0 mb-4">
                     <div class="card ">
                         <div class="card-header pb-0 p-3">
                             <div class="d-flex justify-content-between">
-                                <h6 class="mb-2">Sales by Country</h6>
+                                <h6 class="mb-2">User Peminjaman</h6>
                             </div>
                         </div>
                         <div class="table-responsive">
                             <table class="table align-items-center ">
-                                <tbody>
+                                <thead>
+                                <tr class="text-center" >
+                                        <th class="w-0">
+                                            No.
+                                        </th>
+                                        <th class="w-0">
+                                            User
+                                        </th>
+                                        <th class="w-0">
+                                            Barang
+                                        </th>
+                                        <th class="w-0">
+                                            Jumlah
+                                        </th>
+                                        <th class="w-0">
+                                            Aksi
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <?php
+                                    // Query untuk mengambil data
+                                    $sql = "SELECT * FROM transaksi WHERE status = 'padding'";
+                                    $result = mysqli_query($conn, $sql);
+
+                                    if (mysqli_num_rows($result) > 0) {
+                                        // Output data setiap baris
+                                        // echo "<table><tr><th>ID</th><th>Nama</th><th>Status</th></tr>";
+                                        $no = 1;
+                                        while($row = mysqli_fetch_assoc($result)) { ?>
+                                            <!-- echo "<tr><td>".$row["nama"]."</td><td>".$row["nama"]."</td><td>".$row["status"]."</td></tr>";
+                                        
+                                        echo "</table>"; -->
+
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <td class="w-0"><?=$no?></td>
+                                            <td class="w-0"><?= $row["nama"] ?></td>
+                                            <td class="w-0"><?= $row["nm_brng"] ?></td>
+                                            <td class="w-0"><?= $row["jml_pnjm"] ?></td>
+                                            <td class="w-0">
+                                                    <button class=" updateBtn btn btn-primary btn-sm w-100 mt-2" data-id='<?= $row["id_transaksi"]?>'.>Comfrimasi</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                <?php
+                                    $no++;
+                                    }
+                                } else {
+                                        echo "Tidak ada data";
+                                    }
+
+                                    mysqli_close($conn);
+                                ?>
+
+                                <!-- <tbody>
                                     <tr>
                                         <td class="w-30">
                                             <div class="d-flex px-2 py-1 align-items-center">
@@ -574,7 +646,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                </tbody>
+                                </tbody> -->
                             </table>
                         </div>
                     </div>
@@ -662,6 +734,9 @@
                     </div>
                 </div>
             </div>
+
+
+
             <footer class="footer pt-3  ">
                 <div class="container-fluid">
                     <div class="row align-items-center justify-content-lg-between">
@@ -895,3 +970,27 @@
 </body>
 
 </html>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var buttons = document.getElementsByClassName('updateBtn');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener('click', function() {
+                var id = this.getAttribute('data-id');
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // Mengambil pesan balasan dari server
+                        var response = this.responseText;
+                        // Memperbarui tampilan jika diperlukan
+                        // Misalnya, menampilkan pesan sukses
+                        alert(response);
+                        console.log(response);
+                    }
+                };
+                // Mengirim permintaan ke server PHP
+                xhttp.open("GET", "comfrimasiBarang.php?id=" + id, true);
+                xhttp.send();
+            });
+        }
+    });
+</script>

@@ -3,7 +3,25 @@
 include '../../config/koneksi.php';
 $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,status FROM mstr_barang");
 
+// $ambilData = mysqli_query($conn, "SELECT * FROM transaksi, mstr_barang WHERE transaksi.id_brng = mstr_barang.id_barang");
 
+// // Periksa apakah ada hasil yang ditemukan
+// if (mysqli_num_rows($ambilData) > 0) {
+//     // Tampilkan data satu per satu
+//     while ($row = mysqli_fetch_assoc($ambilData)) {
+//         // Tampilkan data sesuai dengan kolom yang diambil
+//         echo "ID Transaksi: " . $row['id_transaksi'] . "<br>";
+//         echo "ID Barang: " . $row['id_barang'] . "<br>";
+//         echo "Nama Barang: " . $row['nm_brng'] . "<br>";
+//         // Tambahkan data lain yang ingin ditampilkan
+//         echo "<hr>"; // Tambahkan pemisah antara setiap baris data
+//     }
+// } else {
+//     echo "Tidak ada data yang ditemukan";
+// }
+
+// Tutup koneksi
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -58,7 +76,7 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="./listMasterBarang.php">
+                    <a class="nav-link " href="../masterbarang/listMasterBarang.php">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
@@ -67,7 +85,7 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="../transaksi/listTransaksi.php">
+                    <a class="nav-link active " href="">
                         <div
                             class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
@@ -268,7 +286,7 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
                                                 Nama Barang</th>
                                             <th
                                                 class="text-uppercase text-primary text-center text-xxs font-weight-bolder ps-2">
-                                                Stok Barang</th>
+                                                Jumlah Barang</th>
                                             <th
                                                 class="text-center text-uppercase text-primary text-xxs font-weight-bolder">
                                                 Jenis Barang</th>
@@ -313,36 +331,39 @@ $getData = mysqli_query($conn, "SELECT id_barang, nama_brng,stok_brng,jens_brng,
                 </div>
             </footer>
 
+            <?php
+                // var_dump($tampil['id_brng']);
+            ?>
+
             <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Tambah Barang</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Tambah Barang Pinjaman</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form action="#" id="formSimpan" method="post" autocomplete="off">
+                        
+                        <form action="tambahBarang.php" id="formSimpan" method="post" autocomplete="off">
                             <div class="modal-body">
                                 <div class="alert alert-danger" id="errorMessage" style="display: none; color: white;">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="namaBarang" class="form-label">Nama Barang</label>
-                                    <input type="text" class="form-control" id="namaBarang" name="namaBarang">
+                                    <label for="nama" class="form-label">Nama Penguna</label>
+                                    <input type="text" class="form-control" id="nama" name="nama">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="stokBarang" class="form-label">Stok Barang</label>
-                                    <input type="number" class="form-control" id="stokBarang" name="stokBarang">
+                                    <label for="jml_pnjm" class="form-label">Jumlah Pinjam</label>
+                                    <input type="number" class="form-control" id="jml_pnjm" name="jml_pnjm">
                                 </div>
                                 <div class="form-group">
-                                    <label for="jenisBarang" class="font-weight-bold">Jenis Barang</label>
-                                    <select class="form-control" id="jenisBarang" name="jenisBarang">
-                                        <option>Pilih Jenis Barang</option>
-                                        <option>Peralatan Konsumen</option>
-                                        <option>Peralatan Komunikasi</option>
-                                        <option>Peralatan Komputer</option>
-                                        <option>Peralatan Hiburan</option>
-                                        <option>Peralatan Medis</option>
+                                    <label for="nm_brng" class="font-weight-bold">Nama Barang</label>
+                                    <select class="form-control" id="nm_brng" name="nm_brng">
+                                        <option>Pilih Barang Yang Dipinjam</option>
+                                        <?php foreach($getData as $data) :?>
+                                        <option><?= $data['nama_brng'];?></option>
+                                        <?php endforeach ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -425,7 +446,7 @@ $(document).ready(function() {
         var formData = $(this).serialize();
 
         // Validasi di sisi klien
-        if ($('#jenisBarang').val() == "Pilih Jenis Barang") {
+        if ($('#nm_brng').val() == "Pilih Barang Yang Dipinjam") {
             $('#errorMessage').text("Silakan pilih jenis barang!");
             $('#errorMessage').show();
             return false;
